@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="KO Sim">
+<meta name="theme-color" content="#1b1b1b">
+<title>KO Sim</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+  <header id="toolbar">
+    <div class="brand">KO&nbsp;SIM <span>ep-133 style sampler &middot; unofficial</span></div>
+    <div class="tools">
+      <button class="tool" id="btn-keys-hint" title="Show keyboard shortcuts">⌨</button>
+      <button class="tool" id="btn-menu" title="Menu">☰</button>
+      <button class="tool" id="btn-help" title="Help">?</button>
+    </div>
+  </header>
+
+  <main id="stage">
+    <div id="device" class="portrait">
+      <div class="area-screen">
+        <div class="speaker" aria-hidden="true"></div>
+        <canvas id="lcd" width="640" height="320"></canvas>
+      </div>
+
+      <div class="area-knobs">
+        <div class="knob-wrap"><div class="knob" data-knob="x" data-key="Z/X"><div class="knob-cap"><i></i></div></div><label>X</label></div>
+        <div class="knob-wrap"><div class="knob" data-knob="y" data-key="C/V"><div class="knob-cap"><i></i></div></div><label>Y</label></div>
+      </div>
+
+      <div class="area-top">
+        <button class="key small" data-btn="sound" data-key="Q"><s>browse</s>sound</button>
+        <button class="key small" data-btn="main" data-key="W"><s>project</s>main</button>
+        <button class="key small" data-btn="tempo" data-key="E"><s>metro</s>tempo</button>
+        <button class="key small" data-btn="fader" data-key="T"><s></s>fader</button>
+        <button class="key small" data-btn="copy" data-key="Y"><s>dup ptn</s>copy</button>
+        <button class="key small sym" data-btn="minus" data-key="["><s></s>−</button>
+        <button class="key small sym" data-btn="plus" data-key="]"><s></s>+</button>
+      </div>
+
+      <div class="area-body">
+        <div class="fader" id="fader" data-key="↑/↓">
+          <div class="fader-label" id="fader-label">LVL</div>
+          <div class="fader-track"><div class="fader-fill"></div><div class="fader-thumb"></div></div>
+        </div>
+
+        <div class="func">
+          <button class="key grp" data-btn="grp0" data-key="1"><s>mute</s>A</button>
+          <button class="key grp" data-btn="grp1" data-key="2"><s>mute</s>B</button>
+          <button class="key" data-btn="sample" data-key="B"><s>import</s>sample</button>
+          <button class="key grp" data-btn="grp2" data-key="3"><s>mute</s>C</button>
+          <button class="key grp" data-btn="grp3" data-key="4"><s>mute</s>D</button>
+          <button class="key" data-btn="keys" data-key="G"><s></s>keys</button>
+          <button class="key mod" data-btn="shift" data-key="⇧"><s></s>shift</button>
+          <button class="key" data-btn="erase" data-key="⌫"><s>undo</s>erase</button>
+          <button class="key" data-btn="fx" data-key="F"><s></s>fx</button>
+          <button class="key rec" data-btn="record" data-key="R"><s></s>●</button>
+          <button class="key play" data-btn="play" data-key="␣"><s>song</s>▶</button>
+          <button class="key" data-btn="timing" data-key="H"><s>step</s>timing</button>
+        </div>
+
+        <div class="pads" id="pads"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- start overlay (required to unlock audio on iOS / Chrome) -->
+<div id="start" class="overlay show">
+  <div class="sheet center">
+    <h1>KO SIM</h1>
+    <p>An unofficial, browser-based simulator of an EP-133 style sampler / sequencer.</p>
+    <p class="small">Tip on iPhone/iPad: turn the silent switch off or raise the volume. Use “Add to Home Screen” for a full-screen app.</p>
+    <button id="start-btn" class="big">Tap to start</button>
+    <p class="small" id="start-status"></p>
+  </div>
+</div>
+
+<!-- help -->
+<div id="help" class="overlay">
+  <div class="sheet">
+    <button class="close" data-close>×</button>
+    <h2>How to use</h2>
+    <div class="help-cols">
+      <section>
+        <h3>Basics</h3>
+        <ul>
+          <li><b>Pads</b> play the 12 sounds of the current group.</li>
+          <li><b>A B C D</b> select a group (drums, bass, melodic, fx/loops).</li>
+          <li><b>▶</b> play / stop. <b>●</b> arm record, then play pads to record live (quantised by TIMING).</li>
+          <li><b>KEYS</b> plays the selected sound chromatically on all pads. <b>− / +</b> change octave.</li>
+          <li><b>Knob X / Y</b>: drag up/down (or scroll). Their function depends on the screen.</li>
+          <li><b>Fader</b>: controls the parameter chosen with <b>FADER</b> + pad for the current group.</li>
+        </ul>
+        <h3>Patterns &amp; scenes</h3>
+        <ul>
+          <li>Hold <b>group</b> + <b>− / +</b>: change that group's pattern (1–99).</li>
+          <li>Hold <b>group</b> + <b>knob X</b>: pattern length in bars (1–16).</li>
+          <li>On MAIN, <b>− / +</b> select scene. Going past the last scene creates a new one (copy).</li>
+          <li><b>SHIFT + ▶</b>: song mode — plays scenes 1…n in order.</li>
+          <li><b>SHIFT + COPY</b>: duplicate current pattern into the next free slot.</li>
+        </ul>
+      </section>
+      <section>
+        <h3>Sound</h3>
+        <ul>
+          <li><b>SOUND</b>: edit the last played pad. − / + flip pages, knobs edit values (level, pitch, pan, attack, release, start, end, play mode, choke, reverse).</li>
+          <li><b>SHIFT + SOUND</b>: browse the library; knob X or − / + assigns a new sample to the pad.</li>
+          <li><b>SAMPLE</b>: sampling screen. Hold a pad (or hold SAMPLE + pad) to record from the mic or resample the output.</li>
+          <li><b>SHIFT + SAMPLE</b>: import an audio file to the selected pad.</li>
+          <li><b>COPY</b>, pad, pad: copy a sound.</li>
+        </ul>
+        <h3>Timing, FX, erase</h3>
+        <ul>
+          <li><b>TIMING</b>: knob X quantise, knob Y note-repeat rate. Hold <b>TIMING + pad</b> for note repeat.</li>
+          <li><b>SHIFT + TIMING</b>: step editor — tap steps on the screen, knob X/Y move cursor/bar.</li>
+          <li><b>FX</b>: choose master FX (− / +), knobs set parameters, fader = send for the group.</li>
+          <li>Hold <b>FX + pad</b>: punch-in effects (loops, delays, filters, crush, reverse…).</li>
+          <li>Hold <b>ERASE + pad</b>: remove that pad's notes. <b>ERASE + group</b>: clear pattern. <b>SHIFT + ERASE</b>: undo.</li>
+          <li><b>SHIFT + pad / group</b>: mute. <b>TEMPO</b>: knob X bpm, knob Y swing, tap repeatedly to tap-tempo. <b>SHIFT + TEMPO</b>: metronome.</li>
+          <li><b>SHIFT + MAIN</b>: projects 1–9 (auto-saved in this browser).</li>
+        </ul>
+      </section>
+    </div>
+    <p class="small">KO Sim is an unofficial fan simulator for trying out the workflow. It is not affiliated with or endorsed by teenage engineering; all sounds are synthesised in your browser. The real device's controls and features differ in places.</p>
+  </div>
+</div>
+
+<!-- menu -->
+<div id="menu" class="overlay">
+  <div class="sheet">
+    <button class="close" data-close>×</button>
+    <h2>Menu</h2>
+    <div class="menu-list">
+      <button data-action="import-sample">Import audio file to selected pad…</button>
+      <button data-action="export-project">Export project (.json)</button>
+      <button data-action="import-project">Import project (.json)…</button>
+      <button data-action="render-wav">Record output to WAV (start / stop)</button>
+      <button data-action="velocity">Pad velocity: <span id="vel-mode">fixed</span></button>
+      <button data-action="reset-project" class="danger">Reset current project</button>
+    </div>
+    <p class="small">Projects and recorded samples are stored locally in this browser (localStorage / IndexedDB).</p>
+  </div>
+</div>
+
+<input type="file" id="file-audio" accept="audio/*,.wav,.mp3,.m4a,.aif,.aiff,.ogg,.flac" hidden>
+<input type="file" id="file-project" accept="application/json,.json" hidden>
+
+<script src="js/util.js"></script>
+<script src="js/sounds.js"></script>
+<script src="js/store.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/sequencer.js"></script>
+<script src="js/display.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
